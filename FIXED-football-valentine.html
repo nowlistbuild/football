@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>⚽ Be My Valentine - GOAL! ⚽</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@700;900&display=swap');
+
+    :root {
+      --grass: #2d5016;
+      --grass-light: #3a6b1f;
+      --white: #ffffff;
+      --red: #dc2626;
+      --yellow: #fbbf24;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      font-family: 'Roboto', sans-serif;
+      padding: max(10px, 2vh) max(10px, 2vw);
+    }
+
+    #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+    .pitch {
+      width: min(550px, 95vw);
+      max-height: 90vh;
+      max-height: 90dvh;
+      overflow-y: auto;
+      background: repeating-linear-gradient(90deg, var(--grass) 0px, var(--grass) 40px, var(--grass-light) 40px, var(--grass-light) 80px);
+      border: clamp(5px, 1vw, 8px) solid var(--white);
+      border-radius: clamp(12px, 2.5vw, 20px);
+      padding: clamp(25px, 5vh, 35px) clamp(18px, 3.5vw, 25px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      text-align: center;
+      position: relative;
+    }
+
+    .goal-scene {
+      margin: 0 auto clamp(18px, 3.5vh, 25px);
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .goal { width: 180px; height: 130px; margin: 0 auto; position: relative; }
+    .goal-post { position: absolute; background: white; }
+    .post-left, .post-right { bottom: 0; width: 6px; height: 90px; }
+    .post-left { left: 0; }
+    .post-right { right: 0; }
+    .crossbar { top: 0; left: 0; right: 0; height: 6px; }
+    .net {
+      position: absolute;
+      inset: 6px 6px 0 6px;
+      background: 
+        repeating-linear-gradient(0deg, transparent 0px, transparent 8px, rgba(255,255,255,0.1) 8px, rgba(255,255,255,0.1) 10px),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 8px, rgba(255,255,255,0.1) 8px, rgba(255,255,255,0.1) 10px);
+    }
+
+    .football {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(45px, 9vw, 60px);
+      animation: floatBall 3s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes floatBall {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+      50% { transform: translate(-50%, -50%) translateY(-8px); }
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(26px, 5.5vw, 46px);
+      color: white;
+      text-shadow: 3px 3px 0 var(--red), 6px 6px 20px rgba(0,0,0,0.5);
+      letter-spacing: 2px;
+      margin: clamp(12px, 2.5vh, 18px) 0;
+      line-height: 1.15;
+    }
+
+    .var-text {
+      font-size: clamp(12px, 2.8vw, 15px);
+      color: var(--yellow);
+      font-weight: 700;
+      margin-bottom: clamp(20px, 4vh, 28px);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .field {
+      position: relative;
+      height: clamp(150px, 35vw, 190px);
+      margin: clamp(18px, 3.5vh, 25px) 0;
+      background: rgba(0,0,0,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: clamp(10px, 2vw, 15px);
+      overflow: hidden;
+    }
+
+    button {
+      position: absolute;
+      padding: clamp(14px, 3vw, 18px) clamp(24px, 5vw, 35px);
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(16px, 3.5vw, 22px);
+      letter-spacing: 1.5px;
+      border: none;
+      border-radius: clamp(8px, 1.8vw, 12px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+      white-space: nowrap;
+    }
+
+    #yesBtn {
+      left: 8%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    #yesBtn:hover {
+      transform: translateY(-50%) scale(1.05);
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+    }
+
+    #noBtn {
+      right: 8%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hint {
+      font-size: clamp(11px, 2.3vw, 14px);
+      color: rgba(255,255,255,0.7);
+      margin-top: clamp(10px, 2vh, 15px);
+      font-weight: 700;
+    }
+
+    .result {
+      display: none;
+      animation: scoreAnimation 0.6s ease;
+    }
+
+    @keyframes scoreAnimation {
+      0% { opacity: 0; transform: scale(0.8); }
+      50% { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .result h2 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(32px, 6.5vw, 60px);
+      color: var(--yellow);
+      text-shadow: 3px 3px 0 var(--red), 6px 6px 20px rgba(0,0,0,0.5);
+      margin: clamp(15px, 3vh, 20px) 0;
+      letter-spacing: 4px;
+    }
+
+    .celebration {
+      font-size: clamp(15px, 3.2vw, 24px);
+      color: white;
+      line-height: 1.8;
+      margin-top: clamp(12px, 2.5vh, 18px);
+      font-weight: 700;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .trophy-emojis {
+      font-size: clamp(55px, 10vw, 85px);
+      margin: clamp(15px, 3vh, 22px) 0;
+      display: block;
+      animation: celebrate 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes celebrate {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="pitch">
+    <div class="goal-scene">
+      <div class="goal">
+        <div class="goal-post post-left"></div>
+        <div class="goal-post post-right"></div>
+        <div class="goal-post crossbar"></div>
+        <div class="net"></div>
+        <div class="football">⚽❤️</div>
+      </div>
+    </div>
+
+    <h1>WILL YOU BE</h1>
+    <h1>MY VALENTINE?</h1>
+    <p class="var-text">🎯 NO VAR REVIEW NEEDED 🎯</p>
+
+    <div class="field" id="field">
+      <button id="yesBtn">GOAL! ⚽</button>
+      <button id="noBtn">RED CARD 🟥</button>
+    </div>
+
+    <div class="hint" id="hint">⚠️ "No" is getting sent off...</div>
+
+    <div class="result" id="result">
+      <h2>GOOOAAAALLLL!</h2>
+      <span class="trophy-emojis">🏆⚽💕</span>
+      <div class="celebration">
+        WHAT A STRIKE!<br/>
+        ABSOLUTE SCREAMER!<br/>
+        <strong style="color: var(--yellow);">HAPPY VALENTINE'S DAY!</strong>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const field = document.getElementById("field");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const hint = document.getElementById("hint");
+
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    function resizeConfettiCanvas() {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
+      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
+    }
+    resizeConfettiCanvas();
+    window.addEventListener("resize", resizeConfettiCanvas);
+
+    const confettiInstance = confetti.create(confettiCanvas, { resize: false, useWorker: true });
+
+    function goalConfetti() {
+      const colors = ['#22c55e', '#fbbf24', '#dc2626', '#ffffff'];
+      const end = Date.now() + 3000;
+      confettiInstance({
+        particleCount: 150,
+        spread: 120,
+        startVelocity: 60,
+        origin: { x: 0.5, y: 0.5 },
+        colors: colors
+      });
+      (function frame() {
+        confettiInstance({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: colors
+        });
+        confettiInstance({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: colors
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+    }
+
+    let yesScale = 1;
+    function powerUpYes() {
+      yesScale = Math.min(1.6, yesScale + 0.06);
+      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+    }
+
+    let redCarded = false;
+    function redCardSlide(px, py) {
+      if (redCarded) return;
+      const f = field.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      const distance = Math.hypot((b.left + b.width / 2) - px, (b.top + b.height / 2) - py);
+
+      if (distance < 140) {
+        let currentRight = parseFloat(noBtn.style.right) || 8;
+        let currentTop = parseFloat(noBtn.style.top) || 50;
+        currentRight -= 3;
+        currentTop += 1;
+        if (currentRight < -20) {
+          redCarded = true;
+          noBtn.style.display = "none";
+          return;
+        }
+        noBtn.style.right = currentRight + "%";
+        noBtn.style.top = currentTop + "%";
+        noBtn.style.opacity = Math.max(0, 1 - Math.abs(currentRight) / 30);
+        powerUpYes();
+      }
+    }
+
+    field.addEventListener("pointermove", e => redCardSlide(e.clientX, e.clientY));
+    noBtn.addEventListener("click", e => e.preventDefault());
+
+    yesBtn.addEventListener("click", () => {
+      field.style.display = "none";
+      hint.style.display = "none";
+      result.style.display = "block";
+      resizeConfettiCanvas();
+      goalConfetti();
+    });
+  </script>
+</body>
+</html>
